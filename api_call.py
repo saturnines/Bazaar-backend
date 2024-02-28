@@ -213,6 +213,7 @@ class Search:
         self._api = Api()
 
     def search_item(self, arg):
+        """Searches something returns by day/hour/week"""
         x = self._search_function.search_item(arg)
         from items_list import baz_items
         if x is False:
@@ -224,9 +225,17 @@ class Search:
             item_data_hour = self._api.call_api_hourly()
             item_data_day = self._api.call_api_day()
 
-            return item_data_day, item_data_hour, item_data_week
+            data_to_process = item_data_day, item_data_hour, item_data_week
+            return item_data_day
 
 x = Search()
 to_parse = x.search_item("Enchanted Sugar Cane")
 
-print(to_parse[0].get_sell())
+print("Max Sell Prices:", to_parse.get_max_sell())
+print("Max Buy Prices:", to_parse.get_max_buy())
+print("Min Buy Prices:", to_parse.get_min_buy())
+print("Min Sell Prices:", to_parse.get_min_sell())
+print("Current Buy Prices:", to_parse.get_buy())
+print("Current Sell Prices:", to_parse.get_sell())
+print("Sell Volumes:", to_parse.get_sell_vol())
+print("Buy Volumes:", to_parse.get_buy_vol())
