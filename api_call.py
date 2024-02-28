@@ -226,7 +226,7 @@ class Search:
             item_data_day = self._api.call_api_day()
 
             data_to_process = item_data_day, item_data_hour, item_data_week
-            return item_data_day
+            return item_data_hour
 
 x = Search()
 to_parse = x.search_item("Enchanted Sugar Cane")
