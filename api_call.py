@@ -6,6 +6,7 @@ class Item:
 
     The lists here will be populated with the items stats.
 
+
     """
 
     def __init__(self):
@@ -85,8 +86,8 @@ class Api:
     def set_api_item(self, item):
         self._item_name = item
 
-
-    def call_api(self):
+    def call_api_week(self):
+        """This calls the api for weekly """
         api_item = self.get_api_item()
         api_response = requests.get(f"https://sky.coflnet.com/api/bazaar/{api_item}/history/week")
 
@@ -106,6 +107,83 @@ class Api:
             print("Website link changed, please notify the developer so they can update it!")
             return
 
+        if api_response.status_code == 200:
+            api_data = api_response.json()
+            current_item = Item()
+            for data in api_data:
+                try:
+                    current_item.set_max_buy(data.get("maxBuy", []))
+                    current_item.set_min_buy(data.get("minBuy", []))
+                    current_item.set_max_sell(data.get("maxSell", []))
+                    current_item.set_min_sell(data.get("minSell", []))
+                    current_item.set_buy(data.get("buy", []))
+                    current_item.set_sell(data.get("sell", []))
+                    current_item.set_sell_vol(data.get("sellVolume", []))
+                    current_item.set_buy_vol(data.get("buyVolume", []))
+                except KeyError:
+                    pass
+
+            return current_item
+
+    def call_api_hourly(self):
+        """Calls the api """
+        api_item = self.get_api_item()
+        api_response = requests.get(f"https://sky.coflnet.com/api/bazaar/{api_item}/history/hour")
+
+        if api_response.status_code == 400:
+            print("Bad Request. Api Linked most likely changed.")
+            return
+
+        if api_response.status_code == 500:
+            print("Server side problem. CoflSky Api is most likely down.")
+            return
+
+        if api_response.status_code == 503:
+            print("CoflSky Api is down! Try again later.")
+            return
+
+        if api_response.status_code == 404:
+            print("Website link changed, please notify the developer so they can update it!")
+            return
+
+        if api_response.status_code == 200:
+            api_data = api_response.json()
+            current_item = Item()
+            for data in api_data:
+                try:
+                    current_item.set_max_buy(data.get("maxBuy", []))
+                    current_item.set_min_buy(data.get("minBuy", []))
+                    current_item.set_max_sell(data.get("maxSell", []))
+                    current_item.set_min_sell(data.get("minSell", []))
+                    current_item.set_buy(data.get("buy", []))
+                    current_item.set_sell(data.get("sell", []))
+                    current_item.set_sell_vol(data.get("sellVolume", []))
+                    current_item.set_buy_vol(data.get("buyVolume", []))
+                except KeyError:
+                    pass
+
+            return current_item
+
+    def call_api_day(self):
+        """Calls the api """
+        api_item = self.get_api_item()
+        api_response = requests.get(f"https://sky.coflnet.com/api/bazaar/{api_item}/history/day")
+
+        if api_response.status_code == 400:
+            print("Bad Request. Api Linked most likely changed.")
+            return
+
+        if api_response.status_code == 500:
+            print("Server side problem. CoflSky Api is most likely down.")
+            return
+
+        if api_response.status_code == 503:
+            print("CoflSky Api is down! Try again later.")
+            return
+
+        if api_response.status_code == 404:
+            print("Website link changed, please notify the developer so they can update it!")
+            return
 
         if api_response.status_code == 200:
             api_data = api_response.json()
@@ -142,12 +220,13 @@ class Search:
         else:
             dict_item = baz_items[arg]
             self._api.set_api_item(dict_item)
-            item_data = self._api.call_api()
-            return item_data._buy
+            item_data_week = self._api.call_api_week()
+            item_data_hour = self._api.call_api_hourly()
+            item_data_day = self._api.call_api_day()
 
+            return item_data_day, item_data_hour, item_data_week
 
 x = Search()
-print(x.search_item("e"))
-#returns [3.4, 3.1, 2.8, 4.3, 3.9, 4.1, 4.2, 3.6, 3.4, 3.1, 3.5, 4.0, 4.2, 3.7, 3.8, 4.0, 4.3, 4.8, 3.9, 3.4, 3.0, 3.9, 4.6, 5.0, 4.4, 3.9, 4.7, 3.9, 5.7, 4.7, 5.4, 4.9, 4.0, 4.9, 4.0, 3.2, 4.2, 2.9, 3.1, 2.8, 4.3, 4.7, 3.8, 4.1, 2.9, 4.0, 3.4, 3.8, 3.8, 3.4, 3.1, 3.4, 3.6, 3.5, 3.9, 4.0, 3.5, 3.3, 3.8, 4.9, 3.0, 4.0, 3.4, 3.7, 3.2, 3.6, 3.2, 2.9, 3.4, 3.2, 3.0, 3.0, 3.1, 3.6, 4.0, 3.9, 3.6, 3.3, 3.9, 3.8, 3.9, 3.8, 4.0]
+to_parse = x.search_item("Enchanted Sugar Cane")
 
-
+print(to_parse[0].get_sell())
