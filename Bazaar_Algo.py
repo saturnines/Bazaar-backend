@@ -108,7 +108,7 @@ class TradingAlgo:
         hour_avg_sell_vol = self.item_hour.get_avg_sell_volume()
         week_avg_sell_vol = self.item_week.get_avg_sell_volume()
 
-        weighted_sell_vol = (0.4 * day_avg_sell_vol) + (0.3 * hour_avg_sell_vol) + (0.4 * week_avg_sell_vol)
+        weighted_sell_vol = (0.35 * day_avg_sell_vol) + (0.45 * hour_avg_sell_vol) + (0.2 * week_avg_sell_vol)
         return weighted_sell_vol
 
     def weighted_buy_volume(self):
@@ -117,7 +117,7 @@ class TradingAlgo:
         hour_avg_sell_vol = self.item_hour.get_avg_sell_volume()
         week_avg_sell_vol = self.item_week.get_avg_sell_volume()
 
-        weighted_buy_vol = (0.4 * day_avg_sell_vol) + (0.3 * hour_avg_sell_vol) + (0.3 * week_avg_sell_vol)
+        weighted_buy_vol = (0.35 * day_avg_sell_vol) + (0.45 * hour_avg_sell_vol) + (0.2 * week_avg_sell_vol)
         return weighted_buy_vol
 
     def weighted_buy(self):
@@ -125,7 +125,7 @@ class TradingAlgo:
         day_avg_buy = self.item_day.get_avg_buy()
         hour_avg_buy = self.item_hour.get_avg_buy()
         week_avg_buy = self.item_week.get_avg_buy()
-        weighted_buy_vol = (0.5 * day_avg_buy) + (0.3 * hour_avg_buy) + (0.2 * week_avg_buy)
+        weighted_buy_vol = (0.3 * day_avg_buy) + (0.5 * hour_avg_buy) + (0.2 * week_avg_buy)
         return weighted_buy_vol
 
     def weighted_sell(self):
@@ -133,7 +133,7 @@ class TradingAlgo:
         week_avg_sell = self.item_week.get_avg_sell()
         hour_avg_sell = self.item_hour.get_avg_sell()
         daily_avg_sell = self.item_day.get_avg_sell()
-        weighted_sell_vol = (0.4 * week_avg_sell) + (0.3 * hour_avg_sell) + (0.3 * daily_avg_sell)
+        weighted_sell_vol = (0.3 * daily_avg_sell) + (0.5 * hour_avg_sell) + (0.2 * week_avg_sell)
 
         return weighted_sell_vol
 
@@ -144,7 +144,7 @@ class TradingAlgo:
         week_min_buy = self.item_week.get_avg_minbuy()
 
         # Calculate the weighted minimum buy price
-        weighted_min_buy_price = (0.6 * day_min_buy) + (0.3 * hour_min_buy) + (0.1 * week_min_buy)
+        weighted_min_buy_price = (0.3 * day_min_buy) + (0.5 * hour_min_buy) + (0.2 * week_min_buy)
 
         return weighted_min_buy_price
 
@@ -155,7 +155,7 @@ class TradingAlgo:
         week_min_sell = self.item_week.get_avg_minsell()
 
         # Calculate the weighted minimum sell price
-        weighted_min_sell_price = (0.6 * day_min_sell) + (0.3 * hour_min_sell) + (0.1 * week_min_sell)
+        weighted_min_sell_price = (0.3 * day_min_sell) + (0.5 * hour_min_sell) + (0.2 * week_min_sell)
 
         return weighted_min_sell_price
 
@@ -167,7 +167,7 @@ class TradingAlgo:
         week_max_buy = self.item_week.get_avg_maxbuy()
 
         # Calculate the weighted maximum buy price
-        weighted_max_buy_price = (0.6 * day_max_buy) + (0.3 * hour_max_buy) + (0.1 * week_max_buy)
+        weighted_max_buy_price = (0.3 * day_max_buy) + (0.5 * hour_max_buy) + (0.2 * week_max_buy)
 
         return weighted_max_buy_price
 
@@ -178,7 +178,7 @@ class TradingAlgo:
         week_max_sell = self.item_week.get_avg_maxsell()
 
         # Calculate the weighted maximum sell price
-        weighted_max_sell_price = (0.6 * day_max_sell) + (0.3 * hour_max_sell) + (0.1 * week_max_sell)
+        weighted_max_sell_price = (0.3 * day_max_sell) + (0.5 * hour_max_sell) + (0.2 * week_max_sell)
 
         return weighted_max_sell_price
 
