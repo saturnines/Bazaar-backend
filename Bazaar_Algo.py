@@ -183,18 +183,11 @@ class TradingAlgo:
         return weighted_max_sell_price
 
 
-# Assuming your dummy data instances are created as before...
-trading_algo = TradingAlgo(item_data_day, item_data_hour, item_data_week)
 
-# Now you can call the method to analyze the market based on the data
-print(trading_algo.weighted_min_sell())
-print(trading_algo.weighted_min_buy())
-print(trading_algo.weighted_sell())
-print(trading_algo.weighted_buy())
-print(trading_algo.weighted_max_buy())
-print(trading_algo.weighted_max_sell())
-print(trading_algo.weighted_buy_volume())
-print(trading_algo.weighted_sell_volume())
+
+    def main_algo(self):
+        """Determines if it's worth buying or not."""
 
 
 
+# to do implement medium and compare it to average for more accuracy
