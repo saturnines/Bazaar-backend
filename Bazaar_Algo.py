@@ -206,7 +206,10 @@ class TradingAlgo:
     def main_algo(self):
         """Determines if it's worth buying or not."""
 
+        point = 0
 
 
-# to do implement medium and compare it to average for more accuracy
-#implement short term medium?
+
+
+# Need to do main algo to return a boolean
+# main algo could return a tuple -> use tuple to spit out useful data
