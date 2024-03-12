@@ -1,5 +1,12 @@
 # tuple call is returned by day month year
 #from api_call import Item, Search
+import statistics
+
+
+class ValidationError(Exception):
+    pass
+
+
 
 
 class Item:
@@ -57,6 +64,17 @@ class Item:
     def get_avg_maxsell(self):
         flat_list = self.flatten_and_check(self._maxSell)
         return sum(flat_list) / len(flat_list)
+
+    def get_buy_med(self):
+        if self._buy:
+            return statistics.median(self._buy)
+        else:
+            raise  ValidationError("self._buy not found.")
+    def get_sell_med(self): #note buy and sell may not work bc not sure if it works on objects can just do a  long way medium
+        if self._sell:
+            return statistics.median(self._sell)
+        else:
+            raise ValidationError("Self._sell not found")
 
 
 # Dummy data for one day
@@ -191,3 +209,4 @@ class TradingAlgo:
 
 
 # to do implement medium and compare it to average for more accuracy
+#implement short term medium?
