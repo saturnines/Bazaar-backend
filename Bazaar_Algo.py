@@ -70,7 +70,6 @@ class TradingItemAlgo:
     def get_sell_med(self):
         return self.get_median(self._sell)
 
-    # Ported and adapted methods from TradingAlgo, using the class's own data
     def weighted_volume(self, volume_type):
         if volume_type == "sell":
             return (0.35 * self.get_avg_sell_volume()) + (0.45 * self.get_avg_sell_volume()) + (
@@ -97,7 +96,9 @@ class TradingItemAlgo:
             raise ValueError("Invalid price type specified.")
 
     def main_algo(self):
-        # Implement your trading algorithm's decision-making process using the methods above
+        buy_signal_points = 0
+
+
         buy_signal = self.weighted_volume("buy") - self.weighted_volume("sell")
         return buy_signal
 
