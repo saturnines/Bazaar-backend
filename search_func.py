@@ -37,14 +37,10 @@ class Search_Fun:
         curr_item = self._search_function.get_item(item)
 
         if not curr_item:
-            print("Item not found!")
             return False
 
 
         elif len(curr_item) > 1:
-            print("Perhaps a typo. Here are some possible items.")
-            for i in curr_item:
-                print(i)
             return False
         else:
             return curr_item

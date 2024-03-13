@@ -1,5 +1,5 @@
 # tuple call is returned by day month year
-#from api_call import Item, Search
+from api_call import Item, Search
 import statistics
 
 
@@ -165,16 +165,32 @@ class TradingAlgo:
 
         return weighted_max_sell_price
 
+class Main:
+    def __init__(self):
+        self.search_function = Search()  # Use this instance for searching
 
+    def main_algo(self, search):
+        """Determines if it's worth buying or not. Acts like main()."""
+        item_result = self.search_function.search_item(search)  # Use the instance variable
 
+        if not item_result:
+            print("Item not found!")
+            return False
+        # This part handles the search, now we have a tuple.
 
-    def main_algo(self):
-        """Determines if it's worth buying or not."""
+        # Set up Trading Algo and the 3 items:
+        item_day = Item(item_result[0].get_max_sell(),item_result[0].get_max_buy(), item_result[0].get_min_buy(), item_result[0].get_min_sell(), item_result[0].get_buy(), item_result[0].get_sell(), item_result[0].get_sell_vol(), item_result[0].get_buy_vol())
+        item_hour = Item(item_result[1].get_max_sell(),item_result[1].get_max_buy(), item_result[1].get_min_buy(), item_result[1].get_min_sell(), item_result[1].get_buy(), item_result[1].get_sell(), item_result[1].get_sell_vol(), item_result[1].get_buy_vol())
+        item_week = Item(item_result[2].get_max_sell(),item_result[2].get_max_buy(), item_result[2].get_min_buy(), item_result[2].get_min_sell(), item_result[2].get_buy(), item_result[2].get_sell(), item_result[2].get_sell_vol(), item_result[2].get_buy_vol())
 
-        point = 0
-
+        signal = TradingAlgo(item_day, item_hour, item_week)
+        print(signal.weighted_sell())
 
 
 
 # Need to do main algo to return a boolean
 # main algo could return a tuple -> use tuple to spit out useful data
+# def __init__(self, maxSell, maxBuy, min_buy, minSell, buy, sell, sellvolume, buyvolume):
+search = Main()
+x = search.main_algo("Booster Cookie")
+print(x)
