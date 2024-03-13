@@ -1,5 +1,5 @@
 # tuple call is returned by day month year
-from api_call import Item, Search
+#from api_call import Item, Search
 import statistics
 
 
@@ -7,12 +7,10 @@ class ValidationError(Exception):
     pass
 
 
-import statistics
 
 
-class TradingItemAlgo:
+class Item:
     def __init__(self, maxSell, maxBuy, min_buy, minSell, buy, sell, sellvolume, buyvolume):
-        # Initialize with data fields from Item
         self._maxSell = maxSell
         self._maxBuy = maxBuy
         self._min_buy = min_buy
@@ -23,102 +21,160 @@ class TradingItemAlgo:
         self._buyvolume = buyvolume
 
     def flatten_and_check(self, data):
-        """Flatten data if it's a list of lists and ensure it's not empty."""
+        """Ensure data is a list of lists, flatten it, and return [1] if it's empty or not iterable."""
+        # First, ensure the data is in the expected list of lists format
         if not isinstance(data, list) or all(not isinstance(sub, list) for sub in data):
-            data = [data]
+            data = [data]  # Wrap non-iterable or directly iterable data in a list
+
+        # Flatten and filter out empty sublists
         flat_list = [item for sublist in data for item in sublist if item is not None and sublist]
+
+        # Return [1] if flat_list is empty, ensuring there's always something to calculate with
         return flat_list if flat_list else [1]
 
-    def get_avg(self, data):
-        flat_list = self.flatten_and_check(data)
-        return sum(flat_list) / len(flat_list) if flat_list else 0
-
-    def get_median(self, data):
-        if data:
-            return statistics.median(data)
-        else:
-            raise ValueError("Data not found.")
-
-    # Methods directly ported from Item
+    # Example method to get average sell volume
     def get_avg_sell_volume(self):
-        return self.get_avg(self._sellvolume)
+        flat_list = self.flatten_and_check(self._sellvolume)
+        return sum(flat_list) / len(flat_list)
 
     def get_avg_buy_volume(self):
-        return self.get_avg(self._buyvolume)
+        flat_list = self.flatten_and_check(self._buyvolume)
+        return sum(flat_list) / len(flat_list)
 
     def get_avg_buy(self):
-        return self.get_avg(self._buy)
+        flat_list = self.flatten_and_check(self._buy)
+        return sum(flat_list) / len(flat_list)
 
     def get_avg_sell(self):
-        return self.get_avg(self._sell)
+        flat_list = self.flatten_and_check(self._sell)
+        return sum(flat_list) / len(flat_list)
 
     def get_avg_minsell(self):
-        return self.get_avg(self._minSell)
+        flat_list = self.flatten_and_check(self._minSell)
+        return sum(flat_list) / len(flat_list)
 
     def get_avg_minbuy(self):
-        return self.get_avg(self._min_buy)
+        flat_list = self.flatten_and_check(self._min_buy)
+        return sum(flat_list) / len(flat_list)
 
     def get_avg_maxbuy(self):
-        return self.get_avg(self._maxBuy)
+        flat_list = self.flatten_and_check(self._maxBuy)
+        return sum(flat_list) / len(flat_list)
 
     def get_avg_maxsell(self):
-        return self.get_avg(self._maxSell)
+        flat_list = self.flatten_and_check(self._maxSell)
+        return sum(flat_list) / len(flat_list)
 
     def get_buy_med(self):
-        return self.get_median(self._buy)
-
-    def get_sell_med(self):
-        return self.get_median(self._sell)
-
-    # Ported and adapted methods from TradingAlgo, using the class's own data
-    def weighted_volume(self, volume_type):
-        if volume_type == "sell":
-            return (0.35 * self.get_avg_sell_volume()) + (0.45 * self.get_avg_sell_volume()) + (
-                        0.2 * self.get_avg_sell_volume())
-        elif volume_type == "buy":
-            return (0.35 * self.get_avg_buy_volume()) + (0.45 * self.get_avg_buy_volume()) + (
-                        0.2 * self.get_avg_buy_volume())
+        if self._buy:
+            return statistics.median(self._buy)
         else:
-            raise ValueError("Invalid volume type specified.")
-
-    def weighted_price(self, price_type):
-        if price_type in ["buy", "sell", "min_buy", "min_sell", "max_buy", "max_sell"]:
-            method_map = {
-                "buy": self.get_avg_buy,
-                "sell": self.get_avg_sell,
-                "min_buy": self.get_avg_minbuy,
-                "min_sell": self.get_avg_minsell,
-                "max_buy": self.get_avg_maxbuy,
-                "max_sell": self.get_avg_maxsell,
-            }
-            avg_price = method_map[price_type]()
-            return (0.3 * avg_price) + (0.5 * avg_price) + (0.2 * avg_price)
+            raise  ValidationError("self._buy not found.")
+    def get_sell_med(self): #note buy and sell may not work bc not sure if it works on objects can just do a  long way medium
+        if self._sell:
+            return statistics.median(self._sell)
         else:
-            raise ValueError("Invalid price type specified.")
+            raise ValidationError("Self._sell not found")
+
+
+
+class TradingAlgo:
+    def __init__(self, item_day, item_hour, item_week):
+        self.item_day = item_day
+        self.item_hour = item_hour
+        self.item_week = item_week
+
+
+    def weighted_sell_volume(self):
+        # Calculates the average weighted sell volume.
+        day_avg_sell_vol = self.item_day.get_avg_sell_volume()
+        hour_avg_sell_vol = self.item_hour.get_avg_sell_volume()
+        week_avg_sell_vol = self.item_week.get_avg_sell_volume()
+
+        weighted_sell_vol = (0.35 * day_avg_sell_vol) + (0.45 * hour_avg_sell_vol) + (0.2 * week_avg_sell_vol)
+        return weighted_sell_vol
+
+    def weighted_buy_volume(self):
+        # Calculates the average weighted buy volume.
+        day_avg_sell_vol = self.item_day.get_avg_sell_volume()
+        hour_avg_sell_vol = self.item_hour.get_avg_sell_volume()
+        week_avg_sell_vol = self.item_week.get_avg_sell_volume()
+
+        weighted_buy_vol = (0.35 * day_avg_sell_vol) + (0.45 * hour_avg_sell_vol) + (0.2 * week_avg_sell_vol)
+        return weighted_buy_vol
+
+    def weighted_buy(self):
+        """Calculates weighted buy not volume"""
+        day_avg_buy = self.item_day.get_avg_buy()
+        hour_avg_buy = self.item_hour.get_avg_buy()
+        week_avg_buy = self.item_week.get_avg_buy()
+        weighted_buy_vol = (0.3 * day_avg_buy) + (0.5 * hour_avg_buy) + (0.2 * week_avg_buy)
+        return weighted_buy_vol
+
+    def weighted_sell(self):
+        """Calulates weighted sell not volume"""
+        week_avg_sell = self.item_week.get_avg_sell()
+        hour_avg_sell = self.item_hour.get_avg_sell()
+        daily_avg_sell = self.item_day.get_avg_sell()
+        weighted_sell_vol = (0.3 * daily_avg_sell) + (0.5 * hour_avg_sell) + (0.2 * week_avg_sell)
+
+        return weighted_sell_vol
+
+    def weighted_min_buy(self):
+        """Calculates current minimum weighted buy"""
+        day_min_buy = self.item_day.get_avg_minbuy()
+        hour_min_buy = self.item_hour.get_avg_minbuy()
+        week_min_buy = self.item_week.get_avg_minbuy()
+
+        # Calculate the weighted minimum buy price
+        weighted_min_buy_price = (0.3 * day_min_buy) + (0.5 * hour_min_buy) + (0.2 * week_min_buy)
+
+        return weighted_min_buy_price
+
+    def weighted_min_sell(self):
+        """Calculates current minium weighted sell"""
+        day_min_sell = self.item_day.get_avg_minsell()
+        hour_min_sell = self.item_hour.get_avg_minsell()
+        week_min_sell = self.item_week.get_avg_minsell()
+
+        # Calculate the weighted minimum sell price
+        weighted_min_sell_price = (0.3 * day_min_sell) + (0.5 * hour_min_sell) + (0.2 * week_min_sell)
+
+        return weighted_min_sell_price
+
+
+    def weighted_max_buy(self):
+        """Calculates current maximum weighted buy"""
+        day_max_buy = self.item_day.get_avg_maxbuy()
+        hour_max_buy = self.item_hour.get_avg_maxbuy()
+        week_max_buy = self.item_week.get_avg_maxbuy()
+
+        # Calculate the weighted maximum buy price
+        weighted_max_buy_price = (0.3 * day_max_buy) + (0.5 * hour_max_buy) + (0.2 * week_max_buy)
+
+        return weighted_max_buy_price
+
+    def weighted_max_sell(self):
+        """Calculates current maximum weighted sell"""
+        day_max_sell = self.item_day.get_avg_maxsell()
+        hour_max_sell = self.item_hour.get_avg_maxsell()
+        week_max_sell = self.item_week.get_avg_maxsell()
+
+        # Calculate the weighted maximum sell price
+        weighted_max_sell_price = (0.3 * day_max_sell) + (0.5 * hour_max_sell) + (0.2 * week_max_sell)
+
+        return weighted_max_sell_price
+
+
+
 
     def main_algo(self):
-        # Implement your trading algorithm's decision-making process using the methods above
-        buy_signal = self.weighted_volume("buy") - self.weighted_volume("sell")
-        return buy_signal
+        """Determines if it's worth buying or not."""
 
-
+        point = 0
 
 
 
 
 # Need to do main algo to return a boolean
 # main algo could return a tuple -> use tuple to spit out useful data
-
-
-# debugging
-x = Search()
-
-to_parse = x.search_item("Booster Cookie")
-item_day = to_parse[0]
-item_hour = to_parse[1]
-item_week = to_parse[2]
-
-# Initialize your TradingAlgo
-trading_algo = TradingItemAlgo(item_day.get_max_sell(), item_day.get_max_buy(), item_day.get_min_buy(), item_day.get_min_sell(), item_day.get_buy(), item_day.get_sell(), item_day.get_sell_vol(), item_day.get_buy_vol())
-
-print(trading_algo.main_algo())
