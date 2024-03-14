@@ -84,6 +84,11 @@ class TradingAlgo:
         self.item_hour = item_hour
         self.item_week = item_week
 
+    def medium_sell_week(self):
+        return self.item_week.get_sell_med()
+
+    def medium_buy_week(self):
+        return self.item_week.get_buy_med()
 
     def weighted_sell_volume(self):
         # Calculates the average weighted sell volume.
@@ -183,9 +188,25 @@ class Main:
         item_hour = Item(item_result[1].get_max_sell(),item_result[1].get_max_buy(), item_result[1].get_min_buy(), item_result[1].get_min_sell(), item_result[1].get_buy(), item_result[1].get_sell(), item_result[1].get_sell_vol(), item_result[1].get_buy_vol())
         item_week = Item(item_result[2].get_max_sell(),item_result[2].get_max_buy(), item_result[2].get_min_buy(), item_result[2].get_min_sell(), item_result[2].get_buy(), item_result[2].get_sell(), item_result[2].get_sell_vol(), item_result[2].get_buy_vol())
 
-        signal = TradingAlgo(item_day, item_hour, item_week)
-        print(signal.weighted_sell())
 
+        # This is the item with access to the different methods
+        searched_item = TradingAlgo(item_day, item_hour, item_week)
+
+        points = 0  # used to calculate if to buy or not
+
+        # profitability indicator
+        profitability = ((searched_item.weighted_sell() - searched_item.weighted_buy()) / searched_item.weighted_buy()) * 100
+        print("This is the profitability", profitability)
+
+        # market volatility indicator
+        volatility = ((searched_item.weighted_max_sell() - searched_item.weighted_max_buy()) / searched_item.weighted_min_buy()) * 100
+        print("This is mark volatility", volatility)
+
+        #Liquidity Indicator
+        liquid = (searched_item.weighted_buy()+ searched_item.weighted_sell()) / 2
+        print("This is the liquid", liquid)
+
+        #Price Movement Trend
 
 
 # Need to do main algo to return a boolean
