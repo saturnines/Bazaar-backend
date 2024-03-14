@@ -7,8 +7,6 @@ class ValidationError(Exception):
     pass
 
 
-
-
 class Item:
     def __init__(self, maxSell, maxBuy, min_buy, minSell, buy, sell, sellvolume, buyvolume):
         self._maxSell = maxSell
@@ -69,13 +67,14 @@ class Item:
         if self._buy:
             return statistics.median(self._buy)
         else:
-            raise  ValidationError("self._buy not found.")
-    def get_sell_med(self): #note buy and sell may not work bc not sure if it works on objects can just do a  long way medium
+            raise ValidationError("self._buy not found.")
+
+    def get_sell_med(
+            self):  # note buy and sell may not work bc not sure if it works on objects can just do a  long way medium
         if self._sell:
             return statistics.median(self._sell)
         else:
             raise ValidationError("Self._sell not found")
-
 
 
 class TradingAlgo:
@@ -147,7 +146,6 @@ class TradingAlgo:
 
         return weighted_min_sell_price
 
-
     def weighted_max_buy(self):
         """Calculates current maximum weighted buy"""
         day_max_buy = self.item_day.get_avg_maxbuy()
@@ -170,6 +168,7 @@ class TradingAlgo:
 
         return weighted_max_sell_price
 
+
 class Main:
     def __init__(self):
         self.search_function = Search()  # Use this instance for searching
@@ -184,10 +183,15 @@ class Main:
         # This part handles the search, now we have a tuple.
 
         # Set up Trading Algo and the 3 items:
-        item_day = Item(item_result[0].get_max_sell(),item_result[0].get_max_buy(), item_result[0].get_min_buy(), item_result[0].get_min_sell(), item_result[0].get_buy(), item_result[0].get_sell(), item_result[0].get_sell_vol(), item_result[0].get_buy_vol())
-        item_hour = Item(item_result[1].get_max_sell(),item_result[1].get_max_buy(), item_result[1].get_min_buy(), item_result[1].get_min_sell(), item_result[1].get_buy(), item_result[1].get_sell(), item_result[1].get_sell_vol(), item_result[1].get_buy_vol())
-        item_week = Item(item_result[2].get_max_sell(),item_result[2].get_max_buy(), item_result[2].get_min_buy(), item_result[2].get_min_sell(), item_result[2].get_buy(), item_result[2].get_sell(), item_result[2].get_sell_vol(), item_result[2].get_buy_vol())
-
+        item_day = Item(item_result[0].get_max_sell(), item_result[0].get_max_buy(), item_result[0].get_min_buy(),
+                        item_result[0].get_min_sell(), item_result[0].get_buy(), item_result[0].get_sell(),
+                        item_result[0].get_sell_vol(), item_result[0].get_buy_vol())
+        item_hour = Item(item_result[1].get_max_sell(), item_result[1].get_max_buy(), item_result[1].get_min_buy(),
+                         item_result[1].get_min_sell(), item_result[1].get_buy(), item_result[1].get_sell(),
+                         item_result[1].get_sell_vol(), item_result[1].get_buy_vol())
+        item_week = Item(item_result[2].get_max_sell(), item_result[2].get_max_buy(), item_result[2].get_min_buy(),
+                         item_result[2].get_min_sell(), item_result[2].get_buy(), item_result[2].get_sell(),
+                         item_result[2].get_sell_vol(), item_result[2].get_buy_vol())
 
         # This is the item with access to the different methods
         searched_item = TradingAlgo(item_day, item_hour, item_week)
@@ -195,23 +199,45 @@ class Main:
         points = 0  # used to calculate if to buy or not
 
         # profitability indicator
-        profitability = ((searched_item.weighted_sell() - searched_item.weighted_buy()) / searched_item.weighted_buy()) * 100
+        profitability = ((
+                                     searched_item.weighted_sell() - searched_item.weighted_buy()) / searched_item.weighted_buy()) * 100
         print("This is the profitability", profitability)
 
         # market volatility indicator
-        volatility = ((searched_item.weighted_max_sell() - searched_item.weighted_max_buy()) / searched_item.weighted_min_buy()) * 100
+        volatility = ((
+                                  searched_item.weighted_max_sell() - searched_item.weighted_max_buy()) / searched_item.weighted_min_buy()) * 100
         print("This is mark volatility", volatility)
 
-        #Liquidity Indicator
-        liquid = (searched_item.weighted_buy()+ searched_item.weighted_sell()) / 2
+        # Liquidity Indicator
+        liquid = (searched_item.weighted_buy() + searched_item.weighted_sell()) / 2
         print("This is the liquid", liquid)
 
-        #Price Movement Trend
+        # price momentum (weekly)
+        current_price = (searched_item.weighted_sell() + searched_item.weighted_buy()) / 2
+        previous_price = item_week.get_sell_med()
+        momentum = (current_price - previous_price) / previous_price
+        print("This is the momentum", momentum)
+
+        # relative_volume
+        current_volume = (searched_item.weighted_buy_volume() + searched_item.weighted_sell_volume()) / 2
+        average_volume = item_week.get_sell_med()
+        relative_volume = current_volume / average_volume
+        print("This is relative volume", relative_volume)
+
+        # weight - median for BUYING
+        buy_median = searched_item.medium_sell_week() - searched_item.weighted_sell()
+        print("This is true median", buy_median)
+
+        # weight - median for SELLING
+        sell_median = (searched_item.medium_buy_week() - searched_item.weighted_buy())
+        print("This is selling median", sell_median)
 
 
+# TODO add more stuff and i guess check forumlas
 # Need to do main algo to return a boolean
 # main algo could return a tuple -> use tuple to spit out useful data
 # def __init__(self, maxSell, maxBuy, min_buy, minSell, buy, sell, sellvolume, buyvolume):
+# Return dict for easier api from frontend to backend. (shouldbe easier to do with flask)
 search = Main()
 x = search.main_algo("Booster Cookie")
 print(x)
