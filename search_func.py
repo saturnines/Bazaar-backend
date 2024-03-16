@@ -10,7 +10,7 @@ class ItemSearch:
         """Helper function to return a list of items or items"""
 
         if len(item) < 3:
-            return False
+            return
 
         to_search = item.replace(" ", "").lower()
         possible_item_names = []

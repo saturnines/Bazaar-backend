@@ -39,6 +39,9 @@ class Item:
         flat_list = self.flatten_and_check(self._buyvolume)
         return sum(flat_list) / len(flat_list)
 
+    def get_sell(self):
+        return self._sell
+
     def get_avg_buy(self):
         flat_list = self.flatten_and_check(self._buy)
         return sum(flat_list) / len(flat_list)
@@ -82,6 +85,27 @@ class TradingAlgo:
         self.item_day = item_day
         self.item_hour = item_hour
         self.item_week = item_week
+
+    def get_liquid_sell(self):
+        return self.item_day.get_avg_sell()
+
+    def possible_profit_comprehensive(self):
+        # Calculate the average trading cost based on recent hourly data
+        immediate_trade_cost = (self.item_hour.get_avg_buy() + self.item_hour.get_avg_sell()) / 2
+
+        # Incorporate daily data to get a sense of short to medium-term market trends
+        daily_trade_value = (self.item_day.get_avg_buy() + self.item_day.get_avg_sell()) / 2
+
+        # Use weekly data for a longer-term market perspective
+        expected_future_trade_value = (self.item_week.get_avg_buy() + self.item_week.get_avg_sell()) / 2
+
+        # Calculate potential profit, factoring in immediate, daily, and weekly data
+        # The method weights these differently, assuming that more recent data might be more relevant
+        # Adjust the weights according to your trading strategy and risk tolerance
+        weighted_trade_value = (immediate_trade_cost * 0.4) + (daily_trade_value * 0.3) + (
+                expected_future_trade_value * 0.3)
+        profit = expected_future_trade_value - weighted_trade_value
+        return profit
 
     def medium_sell_week(self):
         return self.item_week.get_sell_med()
@@ -196,48 +220,76 @@ class Main:
         # This is the item with access to the different methods
         searched_item = TradingAlgo(item_day, item_hour, item_week)
 
-        points = 0  # used to calculate if to buy or not
-
         # profitability indicator
         profitability = ((
                                      searched_item.weighted_sell() - searched_item.weighted_buy()) / searched_item.weighted_buy()) * 100
-        print("This is the profitability", profitability)
 
         # market volatility indicator
         volatility = ((
                                   searched_item.weighted_max_sell() - searched_item.weighted_max_buy()) / searched_item.weighted_min_buy()) * 100
-        print("This is mark volatility", volatility)
 
         # Liquidity Indicator
         liquid = (searched_item.weighted_buy() + searched_item.weighted_sell()) / 2
-        print("This is the liquid", liquid)
 
         # price momentum (weekly)
         current_price = (searched_item.weighted_sell() + searched_item.weighted_buy()) / 2
         previous_price = item_week.get_sell_med()
         momentum = (current_price - previous_price) / previous_price
-        print("This is the momentum", momentum)
 
         # relative_volume
         current_volume = (searched_item.weighted_buy_volume() + searched_item.weighted_sell_volume()) / 2
         average_volume = item_week.get_sell_med()
         relative_volume = current_volume / average_volume
-        print("This is relative volume", relative_volume)
 
-        # weight - median for BUYING
-        buy_median = searched_item.medium_sell_week() - searched_item.weighted_sell()
-        print("This is true median", buy_median)
+        # Spread Analysis
+        spread = searched_item.weighted_sell() - searched_item.weighted_buy()
 
-        # weight - median for SELLING
-        sell_median = (searched_item.medium_buy_week() - searched_item.weighted_buy())
-        print("This is selling median", sell_median)
+        # Price Stability Indicator
+        weekly_avg_price = (searched_item.weighted_min_sell() + searched_item.weighted_max_sell()) / 2
+        current_price_stability = (current_price - weekly_avg_price) / weekly_avg_price * 100
+
+        # Historical buy Comparison
+        historical_buy_comparison = (searched_item.weighted_buy() - searched_item.medium_buy_week()) / searched_item.medium_buy_week() * 100
+
+        # Historical sell Comparison
+        historical_sell_comparison = (searched_item.weighted_sell() - searched_item.medium_sell_week()) / searched_item.medium_sell_week() * 100
+
+        # Risk-Reward Ratio
+        risk_reward_ratio = searched_item.weighted_max_sell() / searched_item.weighted_max_buy()
+
+        # Volatility Index
+        volatility_index = (searched_item.weighted_max_sell() - searched_item.weighted_min_sell()) / (
+            searched_item.weighted_min_sell()) * 100
+
+        # Possible Profit
+        possible_profit = searched_item.possible_profit_comprehensive()
+
+        # current - instant sell:
+        instant_sell = searched_item.get_liquid_sell()
+
+        # Compile all metrics into a dictionary
+        metrics = {
+            "profitability": profitability,
+            "volatility": volatility,
+            "liquidity": liquid,
+            "price_momentum": momentum,
+            "relative_volume": relative_volume,
+            "spread": spread,
+            "price_stability": current_price_stability,
+            "historical_buy_comparison": historical_buy_comparison,
+            "historical_sell_comparison": historical_sell_comparison,
+            "risk_reward_ratio": risk_reward_ratio,
+            "volatility_index": volatility_index,
+            "possible_profit": possible_profit,
+            "current_price": current_price,
+            "instant_sell": instant_sell,
+        }
+
+        return metrics
 
 
-# TODO add more stuff and i guess check forumlas
-# Need to do main algo to return a boolean
-# main algo could return a tuple -> use tuple to spit out useful data
-# def __init__(self, maxSell, maxBuy, min_buy, minSell, buy, sell, sellvolume, buyvolume):
-# Return dict for easier api from frontend to backend. (shouldbe easier to do with flask)
+
+
 search = Main()
 x = search.main_algo("Booster Cookie")
 print(x)
