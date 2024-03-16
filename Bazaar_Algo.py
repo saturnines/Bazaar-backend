@@ -222,11 +222,11 @@ class Main:
 
         # profitability indicator
         profitability = ((
-                                     searched_item.weighted_sell() - searched_item.weighted_buy()) / searched_item.weighted_buy()) * 100
+                                 searched_item.weighted_sell() - searched_item.weighted_buy()) / searched_item.weighted_buy()) * 100
 
         # market volatility indicator
         volatility = ((
-                                  searched_item.weighted_max_sell() - searched_item.weighted_max_buy()) / searched_item.weighted_min_buy()) * 100
+                              searched_item.weighted_max_sell() - searched_item.weighted_max_buy()) / searched_item.weighted_min_buy()) * 100
 
         # Liquidity Indicator
         liquid = (searched_item.weighted_buy() + searched_item.weighted_sell()) / 2
@@ -249,10 +249,12 @@ class Main:
         current_price_stability = (current_price - weekly_avg_price) / weekly_avg_price * 100
 
         # Historical buy Comparison
-        historical_buy_comparison = (searched_item.weighted_buy() - searched_item.medium_buy_week()) / searched_item.medium_buy_week() * 100
+        historical_buy_comparison = (
+                                                searched_item.weighted_buy() - searched_item.medium_buy_week()) / searched_item.medium_buy_week() * 100
 
         # Historical sell Comparison
-        historical_sell_comparison = (searched_item.weighted_sell() - searched_item.medium_sell_week()) / searched_item.medium_sell_week() * 100
+        historical_sell_comparison = (
+                                                 searched_item.weighted_sell() - searched_item.medium_sell_week()) / searched_item.medium_sell_week() * 100
 
         # Risk-Reward Ratio
         risk_reward_ratio = searched_item.weighted_max_sell() / searched_item.weighted_max_buy()
@@ -286,10 +288,8 @@ class Main:
         }
 
         return metrics
-
-
-
+#backend should be done, will employee a a dynamic search bar to go around this shitty search function?
 
 search = Main()
-x = search.main_algo("Booster Cookie")
+x = search.main_algo("Purple Candy")
 print(x)

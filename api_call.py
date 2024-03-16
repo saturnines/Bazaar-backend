@@ -228,6 +228,4 @@ class Search:
             data_to_process = item_data_day, item_data_hour, item_data_week
             return data_to_process #possible bug here with getters setters will fix
 
-x = Search()
-to_parse = x.search_item("Enchanted Sugar Cane")
 
