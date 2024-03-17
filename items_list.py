@@ -411,5 +411,5 @@ baz_items = {
     "Wither Blood": "WITHER_BLOOD",
     "Blaze Wax": "BLAZE_WAX",
     "Lapis Crystal": "LAPIS_CRYSTAL",
-    "Shiny Prism": "SHINY_PRISM"
+    "Shiny Prism": "SHINY_PRISM",
 }

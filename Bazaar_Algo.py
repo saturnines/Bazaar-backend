@@ -1,4 +1,3 @@
-# tuple call is returned by day month year
 from api_call import Item, Search
 import statistics
 
@@ -19,13 +18,20 @@ class Item:
         self._buyvolume = buyvolume
 
     def flatten_and_check(self, data):
-        """Ensure data is a list of lists, flatten it, and return [1] if it's empty or not iterable."""
-        # First, ensure the data is in the expected list of lists format
-        if not isinstance(data, list) or all(not isinstance(sub, list) for sub in data):
-            data = [data]  # Wrap non-iterable or directly iterable data in a list
+        """Ensure data is a list of lists, flatten it, and handle non-iterable items correctly."""
+        # Ensure data is in a list
+        if not isinstance(data, list):
+            data = [data]
 
-        # Flatten and filter out empty sublists
-        flat_list = [item for sublist in data for item in sublist if item is not None and sublist]
+        flat_list = []
+        for item in data:
+            # If the item is a list, extend flat_list by iterating over its elements
+            if isinstance(item, list):
+                flat_list.extend([subitem for subitem in item if subitem is not None])
+            # For non-list items (including non-iterables like float, int), append directly to flat_list
+            else:
+                if item is not None:
+                    flat_list.append(item)
 
         # Return [1] if flat_list is empty, ensuring there's always something to calculate with
         return flat_list if flat_list else [1]
@@ -197,7 +203,7 @@ class Main:
     def __init__(self):
         self.search_function = Search()  # Use this instance for searching
 
-    def main_algo(self, search):
+    def metrics(self, search):
         """Determines if it's worth buying or not. Acts like main()."""
         item_result = self.search_function.search_item(search)  # Use the instance variable
 
@@ -250,18 +256,17 @@ class Main:
 
         # Historical buy Comparison
         historical_buy_comparison = (
-                                                searched_item.weighted_buy() - searched_item.medium_buy_week()) / searched_item.medium_buy_week() * 100
+                                            searched_item.weighted_buy() - searched_item.medium_buy_week()) / searched_item.medium_buy_week() * 100
 
         # Historical sell Comparison
         historical_sell_comparison = (
-                                                 searched_item.weighted_sell() - searched_item.medium_sell_week()) / searched_item.medium_sell_week() * 100
+                                             searched_item.weighted_sell() - searched_item.medium_sell_week()) / searched_item.medium_sell_week() * 100
 
-        # Risk-Reward Ratio
-        risk_reward_ratio = searched_item.weighted_max_sell() / searched_item.weighted_max_buy()
+        # Medium sell
+        medium_sell = searched_item.medium_sell_week()
 
-        # Volatility Index
-        volatility_index = (searched_item.weighted_max_sell() - searched_item.weighted_min_sell()) / (
-            searched_item.weighted_min_sell()) * 100
+        # medium buy
+        medium_buy = searched_item.medium_buy_week()
 
         # Possible Profit
         possible_profit = searched_item.possible_profit_comprehensive()
@@ -280,16 +285,23 @@ class Main:
             "price_stability": current_price_stability,
             "historical_buy_comparison": historical_buy_comparison,
             "historical_sell_comparison": historical_sell_comparison,
-            "risk_reward_ratio": risk_reward_ratio,
-            "volatility_index": volatility_index,
+            "medium_sell": medium_sell,
+            "medium_buy": medium_buy,
             "possible_profit": possible_profit,
             "current_price": current_price,
             "instant_sell": instant_sell,
         }
 
         return metrics
-#backend should be done, will employee a a dynamic search bar to go around this shitty search function?
 
-search = Main()
-x = search.main_algo("Purple Candy")
-print(x)
+    def main_algo(self, search):
+        metrics = self.metrics(search)
+
+        if not metrics:
+            raise ValidationError("Item not Found")
+
+        print(metrics["profitability"])
+
+
+x = Main()
+print(x.main_algo("Nurse Shark Tooth"))
