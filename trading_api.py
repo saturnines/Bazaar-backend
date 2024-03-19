@@ -1,14 +1,15 @@
 import json
 
-from fastapi import FastAPI,HTTPException
+from fastapi import FastAPI, HTTPException
 from Bazaar_Algo import Main
 from pydantic import BaseModel
+
 app = FastAPI()
+
 
 class InvalidSearch(Exception):
     """Raised if we search something invalid"""
     pass
-
 
 
 class Metrics(BaseModel):
@@ -28,6 +29,11 @@ class Metrics(BaseModel):
     instant_sell: float
 
 
+class InvestmentSignal(BaseModel):
+    Signal: str
+    metrics: Metrics
+
+
 @app.get("/items/", response_model=Metrics)
 async def get_item_metrics(search_term: str):
     if not search_term:
@@ -35,19 +41,20 @@ async def get_item_metrics(search_term: str):
 
     search = Main()
     try:
-        dict_result = search.main_algo(search_term)
-        return Metrics(**dict_result) #unpack the dict from Bazaar_algo.py
+        returned_dict = search.main_algo(search_term)
+        metrics_inst = Metrics(**returned_dict)
+        investment_signal = InvestmentSignal(Signal=returned_dict["Signal"], metrics=metrics_inst)
+        return investment_signal
+
     except InvalidSearch:
-        raise HTTPException(status_code=404, detail="Item not found (This shouldn't happen because frontend is a dynamic search with only safe values)")
+        raise HTTPException(status_code=404,
+                            detail="Item not found (This shouldn't happen because frontend is a dynamic search with only safe values)")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-
-
-
 
 
 # This is a quick run command for debugging purposes
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="127.0.0.1", port=8000)

@@ -295,13 +295,98 @@ class Main:
         return metrics
 
     def main_algo(self, search):
+        points = 0
         metrics = self.metrics(search)
 
         if not metrics:
-            raise ValidationError("Item not Found")
+            print("Item not found!")
+            return False
 
-        print(metrics["profitability"])
+        # Positive possible_profit
+        points += 1 if metrics["possible_profit"] > 0 else 0
 
+        # Profitability considering volatility
+        if metrics["profitability"] > -5:
+            points += 1
+            if metrics["volatility"] < -2:  # Subtract a point for high volatility
+                points -= 1
+
+        # Low volatility
+        points += 1 if metrics["volatility"] > -3 else 0
+
+        # High liquidity adjusted for volatility
+        if metrics["liquidity"] > 1000000:
+            points += 1
+            if metrics["volatility"] < -2:
+                points -= 1
+
+        # Positive price momentum and high price stability
+        if metrics["price_momentum"] > 0:
+            points += 1
+            if metrics["price_stability"] > 100:
+                points += 2
+
+        # Spread indicating market efficiency
+        if metrics["spread"] > -50000:
+            points += 1
+            if metrics["liquidity"] > 1500000:
+                spread_to_liquidity_ratio = abs(metrics["spread"]) / metrics["liquidity"]
+                if spread_to_liquidity_ratio < 0.01:
+                    points += 1
+
+        # High price stability
+        points += 1 if metrics["price_stability"] > 100 else 0
+
+        # Historical buy vs. sell comparison adjusted for momentum
+        if metrics["historical_buy_comparison"] > metrics["historical_sell_comparison"]:
+            points += 2 if metrics["price_momentum"] > 0 else 1
+
+        # Relative volume in context of volatility
+        if metrics["relative_volume"] > 0.05:
+            points += 1
+            if metrics["volatility"] < -2:
+                points -= 1
+
+        # Current price relative to medium buy or sell indicating direction
+        if metrics["current_price"] <= metrics["medium_buy"]:
+            points += 1
+        if metrics["current_price"] >= metrics["medium_sell"]:
+            points += 2
+
+        # Instant sell price comparison indicating potential for immediate transaction
+        if metrics["instant_sell"] >= metrics["current_price"] * 0.98:
+            points += 1
+
+        # Adjusted higher liquidity threshold
+        points += 1 if metrics["liquidity"] > 1500000 else 0
+
+
+
+        if points >= 10:
+            decision = "Buy"
+        elif 5 <= points < 10:
+            decision = "Watch"
+        else:
+            decision = "No"
+
+        return {"Signal":decision, "metrics":metrics}
 
 x = Main()
-print(x.main_algo("Nurse Shark Tooth"))
+print(x.main_algo("Summoning Eye"))
+
+data = {
+    'profitability': -14.737874774311303,
+    'volatility': -18.014109541347377,
+    'liquidity': 119426.71695358845,
+    'price_momentum': 0.11057429096849841,
+    'relative_volume': 0.27178313481762517,
+    'spread': -19001.142268285388,
+    'price_stability': 118.66220075462573,
+    'historical_buy_comparison': -12.381741686365071,
+    'historical_sell_comparison': 2.222647131607789,
+    'medium_sell': 107536.0,
+    'medium_buy': 147146.6,
+    'possible_profit': 4854.731868852119,
+    'current_price': 119426.71695358845,
+    'instant_sell': 111800.64135188852
+}
