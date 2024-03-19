@@ -360,8 +360,6 @@ class Main:
         # Adjusted higher liquidity threshold
         points += 1 if metrics["liquidity"] > 1500000 else 0
 
-
-
         if points >= 10:
             decision = "Buy"
         elif 5 <= points < 10:
@@ -369,24 +367,9 @@ class Main:
         else:
             decision = "No"
 
-        return {"Signal":decision, "metrics":metrics}
+        return {"Signal": decision, "metrics": metrics}
+
+
 
 x = Main()
-print(x.main_algo("Summoning Eye"))
-
-data = {
-    'profitability': -14.737874774311303,
-    'volatility': -18.014109541347377,
-    'liquidity': 119426.71695358845,
-    'price_momentum': 0.11057429096849841,
-    'relative_volume': 0.27178313481762517,
-    'spread': -19001.142268285388,
-    'price_stability': 118.66220075462573,
-    'historical_buy_comparison': -12.381741686365071,
-    'historical_sell_comparison': 2.222647131607789,
-    'medium_sell': 107536.0,
-    'medium_buy': 147146.6,
-    'possible_profit': 4854.731868852119,
-    'current_price': 119426.71695358845,
-    'instant_sell': 111800.64135188852
-}
+print(x.main_algo("Booster Cookie"))
