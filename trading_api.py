@@ -31,7 +31,7 @@ class InvestmentSignal(BaseModel):
     Signal: str
     metrics: Metrics
 
-@app.get("/items/", response_model=InvestmentSignal)
+@app.get("/items/", response_model=InvestmentSignal) # may need to change the address when i build frontend.
 async def get_item_metrics(search_term: str):
     if not search_term:
         raise HTTPException(status_code=400, detail="Search term is required.")
