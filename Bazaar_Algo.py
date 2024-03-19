@@ -370,6 +370,8 @@ class Main:
         return {"Signal": decision, "metrics": metrics}
 
 
-
+# Debugging purposes..
+"""
 x = Main()
 print(x.main_algo("Booster Cookie"))
+"""
