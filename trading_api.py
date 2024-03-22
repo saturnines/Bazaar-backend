@@ -54,7 +54,12 @@ async def get_item_metrics(search_term: str):
 
 
 
-
+"""
+_
+TODO:
+Implement Caching
+Finish Frontend
+Implement ALL bazaar items to item_list.py"""
 
 # This is a quick run command for debugging purposes
 if __name__ == "__main__":
