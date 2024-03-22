@@ -31,6 +31,9 @@ class InvestmentSignal(BaseModel):
     Signal: str
     metrics: Metrics
 
+class possible_item(BaseModel):
+    all_items: list
+
 @app.get("/items/", response_model=InvestmentSignal) # may need to change the address when i build frontend.
 async def get_item_metrics(search_term: str):
     if not search_term:
@@ -52,6 +55,8 @@ async def get_item_metrics(search_term: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.get("/dyn_search_list/", response_model=possible_item):
+async def dyn_search_list():
 
 
 """
