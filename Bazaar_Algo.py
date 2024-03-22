@@ -373,4 +373,4 @@ class Main:
 # Debugging purposes..
 
 x = Main()
-print(x.main_algo("emperor's skull"))
+print(x.main_algo("big brain v"))
