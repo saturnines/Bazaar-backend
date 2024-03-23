@@ -58,8 +58,8 @@ async def get_item_metrics(search_term: str):
 class PossibleItem(BaseModel):
     all_items: List[str]
 
-@app.get("/dyn_search_list", response_model=PossibleItem) """TO do make this no query"""
-async def dyn_search_list(search):
+@app.get("/dyn_search_list")
+async def dyn_search_list():
     """API call for frontend use to get a list of searchable items"""
     try:
         dyn_items = DynSearchList()
@@ -73,9 +73,9 @@ async def dyn_search_list(search):
 """
 _
 TODO:
-Implement Caching
+Implement Caching < should be done in the middle of first api and second api chaning 
 Finish Frontend
-Implement ALL bazaar items to item_list.py"""
+"""
 
 # This is a quick run command for debugging purposes
 if __name__ == "__main__":
