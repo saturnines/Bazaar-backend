@@ -3,6 +3,7 @@ import json
 from fastapi import FastAPI,HTTPException
 from Bazaar_Algo import Main
 from pydantic import BaseModel
+from dyn_search_arr import DynSearchList
 app = FastAPI()
 
 class InvalidSearch(Exception):
@@ -55,8 +56,15 @@ async def get_item_metrics(search_term: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.get("/dyn_search_list/", response_model=possible_item):
+@app.get("/dyn_search_list/", response_model=possible_item)
 async def dyn_search_list():
+    """API call for frontend use to get a list of searchable items"""
+    try:
+        dyn_items = DynSearchList()
+        searchable_list = dyn_items.get_item()
+        return searchable_list
+    except InvalidSearch:
+        raise HTTPException(status_code=405, detail='List not found!')
 
 
 """
