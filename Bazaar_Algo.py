@@ -372,5 +372,3 @@ class Main:
 
 # Debugging purposes..
 
-x = Main()
-print(x.main_algo("big brain v"))
