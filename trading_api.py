@@ -5,9 +5,23 @@ from Bazaar_Algo import Main
 from pydantic import BaseModel
 from dyn_search_arr import DynSearchList
 from typing import List
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
+origins = [ #Debugging purposes for the frontend
+    "http://localhost:3000",  # Allow your frontend origin
+    "http://localhost:8000",  # Allow local development server
+    # Add any other origins as needed
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class InvalidSearch(Exception):
     """Raised if we search something invalid"""
