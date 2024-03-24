@@ -9,8 +9,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-origins = [ #Debugging purposes for the frontend
-    "http://localhost:3000",  # Allow your frontend origin
+origins = [ # Used this to test if the apis work within the frontend
+    "http://localhost:3000",  # Allow  frontend origin
     "http://localhost:8000",  # Allow local development server
     # Add any other origins as needed
 ]
@@ -45,7 +45,7 @@ class Metrics(BaseModel):  # data validation
     instant_sell: float
 
 
-class InvestmentSignal(BaseModel):
+class InvestmentSignal(BaseModel): #data validation again
     Signal: str
     metrics: Metrics
 
@@ -84,12 +84,6 @@ async def dyn_search_list():
         raise HTTPException(status_code=405, detail='List not found!')
 
 
-"""
-_
-TODO:
-Implement Caching < should be done in the middle of first api and second api chaning 
-Finish Frontend
-"""
 
 # This is a quick run command for debugging purposes
 if __name__ == "__main__":
