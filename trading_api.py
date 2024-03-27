@@ -12,6 +12,7 @@ app = FastAPI()
 origins = [ # Used this to test if the apis work within the frontend
     "http://localhost:3000",  # Allow  frontend origin
     "http://localhost:8000",  # Allow local development server
+    "http://127.0.0.1:5500"
     # Add any other origins as needed
 ]
 
@@ -49,7 +50,7 @@ class InvestmentSignal(BaseModel): #data validation again
     Signal: str
     metrics: Metrics
 
-@app.get("/items/", response_model=InvestmentSignal)  # may need to change the address when i build frontend.
+@app.get("/items/", response_model=InvestmentSignal)
 async def get_item_metrics(search_term: str):
     if not search_term:
         raise HTTPException(status_code=400, detail="Search term is required.")
