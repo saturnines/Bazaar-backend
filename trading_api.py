@@ -7,7 +7,13 @@ from dyn_search_arr import DynSearchList
 from typing import List
 from fastapi.middleware.cors import CORSMiddleware
 
+#Caching Imports Below:
+import redis
+
+
 app = FastAPI()
+rd = redis.Redis(hosts="localhost", port=6379, db=0)
+
 
 origins = [ # Used this to test if the apis work within the frontend
     "http://localhost:3000",  # Allow  frontend origin
@@ -54,21 +60,25 @@ class InvestmentSignal(BaseModel): #data validation again
 async def get_item_metrics(search_term: str):
     if not search_term:
         raise HTTPException(status_code=400, detail="Search term is required.")
-
+    cache = rd.get(search_term)
     search = Main()
-    try:
-        returned_dict = search.main_algo(search_term)
-        if not returned_dict:  # Handle case when main_algo returns False
+    if cache:
+        print("Cache exists")
+        return json.loads(search_term)
+    else:
+        try:
+            returned_dict = search.main_algo(search_term)
+            if not returned_dict:  # Handle case when main_algo returns False
+                raise HTTPException(status_code=404, detail="Item not found...")
+
+            metrics_inst = Metrics(**returned_dict['metrics'])
+            investment_signal = InvestmentSignal(Signal=returned_dict["Signal"], metrics=metrics_inst)
+            return investment_signal
+
+        except InvalidSearch:
             raise HTTPException(status_code=404, detail="Item not found...")
-
-        metrics_inst = Metrics(**returned_dict['metrics'])
-        investment_signal = InvestmentSignal(Signal=returned_dict["Signal"], metrics=metrics_inst)
-        return investment_signal
-
-    except InvalidSearch:
-        raise HTTPException(status_code=404, detail="Item not found...")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
 
 class PossibleItem(BaseModel):
     all_items: List[str]
