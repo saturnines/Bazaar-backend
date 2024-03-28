@@ -86,7 +86,7 @@ async def get_item_metrics(search_term: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     finally:
-        await client.aclose()  # finally we close the client connection
+        await client.aclose()
 
 
 class PossibleItem(BaseModel):
