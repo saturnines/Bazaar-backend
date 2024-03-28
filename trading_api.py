@@ -105,6 +105,7 @@ async def dyn_search_list():
         raise HTTPException(status_code=405, detail='List not found!')
 
 
+#Note if you Want to run the redis server use "docker run --name redis -p 6379:6379 -d redis"
 # This is a quick run command for debugging purposes
 if __name__ == "__main__":
     import uvicorn
