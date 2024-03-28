@@ -7,18 +7,17 @@ from dyn_search_arr import DynSearchList
 from typing import List
 from fastapi.middleware.cors import CORSMiddleware
 
-#Caching Imports Below:
-import redis
-
+# Caching Imports Below:
+from redis.asyncio import Redis
 
 app = FastAPI()
-rd = redis.Redis(hosts="localhost", port=6379, db=0)
 
-
-origins = [ # Used this to test if the apis work within the frontend
-    "http://localhost:3000",  # Allow  frontend origin
+origins = [  # Used this to test if the apis work within the frontend
+    "http://127.0.0.1:6379",  # Allow Reddis
     "http://localhost:8000",  # Allow local development server
-    "http://127.0.0.1:5500"
+    "http://127.0.0.1:5500",  # Allow Frontend
+    "http://127.0.0.1:51242"
+
     # Add any other origins as needed
 ]
 
@@ -29,6 +28,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 class InvalidSearch(Exception):
     """Raised if we search something invalid"""
@@ -52,36 +52,46 @@ class Metrics(BaseModel):  # data validation
     instant_sell: float
 
 
-class InvestmentSignal(BaseModel): #data validation again
+class InvestmentSignal(BaseModel):  # data validation again
     Signal: str
     metrics: Metrics
+
 
 @app.get("/items/", response_model=InvestmentSignal)
 async def get_item_metrics(search_term: str):
     if not search_term:
         raise HTTPException(status_code=400, detail="Search term is required.")
-    cache = rd.get(search_term)
     search = Main()
-    if cache:
-        print("Cache exists")
-        return json.loads(search_term)
-    else:
-        try:
+
+    client = Redis.from_url("redis://localhost")
+    try:
+        print(f"Connection Pool Open! {await client.ping()}")
+
+        cache = await client.get(search_term)
+        if cache:
+            print("Cache exists")
+            return InvestmentSignal.parse_raw(cache)
+        else:
+            print("Cache Miss")
             returned_dict = search.main_algo(search_term)
-            if not returned_dict:  # Handle case when main_algo returns False
+            if not returned_dict:
                 raise HTTPException(status_code=404, detail="Item not found...")
 
             metrics_inst = Metrics(**returned_dict['metrics'])
             investment_signal = InvestmentSignal(Signal=returned_dict["Signal"], metrics=metrics_inst)
+            await client.set(search_term, investment_signal.json(), ex=3600)
             return investment_signal
+    except InvalidSearch:
+        raise HTTPException(status_code=404, detail="Item not found...")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        await client.aclose()  # finally we close the client connection
 
-        except InvalidSearch:
-            raise HTTPException(status_code=404, detail="Item not found...")
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))
 
 class PossibleItem(BaseModel):
     all_items: List[str]
+
 
 @app.get("/dyn_search_list")
 async def dyn_search_list():
@@ -89,11 +99,10 @@ async def dyn_search_list():
     try:
         dyn_items = DynSearchList()
         searchable_list_inst = dyn_items.get_item()
-        to_return = PossibleItem(all_items = searchable_list_inst)
+        to_return = PossibleItem(all_items=searchable_list_inst)
         return to_return
     except InvalidSearch:
         raise HTTPException(status_code=405, detail='List not found!')
-
 
 
 # This is a quick run command for debugging purposes
