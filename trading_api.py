@@ -1,4 +1,3 @@
-import json
 
 from fastapi import FastAPI, HTTPException
 from Bazaar_Algo import Main
