@@ -62,7 +62,7 @@ async def get_item_metrics(search_term: str):
         raise HTTPException(status_code=400, detail="Search term is required.")
     search = Main()  # Init API and search function
 
-    client = Redis.from_url("redis://localhost")  # Open Redis pool
+    client = Redis.from_url("redis://redis")  # Open Redis pool
     try:
         print(f"Connection Pool Open! {await client.ping()}")
 
@@ -104,7 +104,8 @@ async def dyn_search_list():
         raise HTTPException(status_code=405, detail='List not found!')
 
 
-# Note if you want to run the redis server use "docker run --name redis -p 6379:6379 -d redis"
+# Note if you want to run the redis server use "
+# "
 # This is a quick run command for debugging purposes
 if __name__ == "__main__":
     import uvicorn

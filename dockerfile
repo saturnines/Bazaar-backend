@@ -11,7 +11,7 @@ COPY . /app
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Allow port 8000
-EXPOSE 8000
+EXPOSE 8080
 
 
 #Run the app
