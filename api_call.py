@@ -6,10 +6,9 @@ class Item:
 
     The lists here will be populated with the items stats.
 
-
     """
 
-    def __init__(self):
+    def __init__(self): # this just holds all values the COFLAPI returns
         self._maxSell = []
         self._maxBuy = []
         self._min_buy = []
@@ -28,9 +27,11 @@ class Item:
         return self._maxSell
 
     def set_max_buy(self, data):
+        """Set max buy from the data"""
         self._maxBuy.append(data)
 
     def get_max_buy(self):
+        """Return max buy"""
         return self._maxBuy
 
     def set_min_buy(self, data):
@@ -38,6 +39,7 @@ class Item:
         self._min_buy.append(data)
 
     def get_min_buy(self):
+        """Return min buy"""
         return self._min_buy
 
     def set_min_sell(self, data):
@@ -45,6 +47,7 @@ class Item:
         self._minSell.append(data)
 
     def get_min_sell(self):
+        """Return min sell"""
         return self._minSell
 
     def set_buy(self, data):
@@ -52,24 +55,31 @@ class Item:
         self._buy.append(data)
 
     def get_buy(self):
+        """Return buy"""
         return self._buy
 
     def set_sell(self, data):
+        """Set sell from api result"""
         self._sell.append(data)
 
     def get_sell(self):
+        """Return the sell item"""
         return self._sell
 
     def set_sell_vol(self, data):
+        """Set the sell vol from api"""
         self._sellvolume.append(data)
 
     def get_sell_vol(self):
+        """Get sell vol from the itemclass"""
         return self._sellvolume
 
     def set_buy_vol(self, data):
+        """Set the buy volume from api"""
         self._buyvolume.append(data)
 
     def get_buy_vol(self):
+        """Get buy volume"""
         return self._buyvolume
 
 
@@ -81,9 +91,11 @@ class Api:
         self._item_information = Item()
 
     def get_api_item(self):
+        """Gets api item name"""
         return self._item_name
 
     def set_api_item(self, item):
+        """Sets item_name to searched item"""
         self._item_name = item
 
     def call_api_week(self):
@@ -165,7 +177,7 @@ class Api:
             return current_item
 
     def call_api_day(self):
-        """Calls the api """
+        """Calls the api with different status codes """
         api_item = self.get_api_item()
         api_response = requests.get(f"https://sky.coflnet.com/api/bazaar/{api_item}/history/day")
 
@@ -206,7 +218,6 @@ class Api:
 
 class Search:
     """Handles search from user."""
-
     def __init__(self):
         from search_func import Search_Fun
         self._search_function = Search_Fun()

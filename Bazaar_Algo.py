@@ -52,37 +52,44 @@ class Item:
         return self._sell
 
     def get_avg_buy(self):
+        """Calculates Average buy of an item"""
         flat_list = self.flatten_and_check(self._buy)
         return sum(flat_list) / len(flat_list)
 
     def get_avg_sell(self):
+        """Calculates average sell of items"""
         flat_list = self.flatten_and_check(self._sell)
         return sum(flat_list) / len(flat_list)
 
     def get_avg_minsell(self):
+        """Calculates average min sell of an item"""
         flat_list = self.flatten_and_check(self._minSell)
         return sum(flat_list) / len(flat_list)
 
     def get_avg_minbuy(self):
+        """Calculates average min buy of an item"""
         flat_list = self.flatten_and_check(self._min_buy)
         return sum(flat_list) / len(flat_list)
 
     def get_avg_maxbuy(self):
+        """Calculates average max buy of an item"""
         flat_list = self.flatten_and_check(self._maxBuy)
         return sum(flat_list) / len(flat_list)
 
     def get_avg_maxsell(self):
+        """Calculates average max sell of an item"""
         flat_list = self.flatten_and_check(self._maxSell)
         return sum(flat_list) / len(flat_list)
 
     def get_buy_med(self):
+        """Calculates the median get buy of items."""
         if self._buy:
             return statistics.median(self._buy)
         else:
             raise ValidationError("self._buy not found.")
 
-    def get_sell_med(
-            self):  # note buy and sell may not work bc not sure if it works on objects can just do a  long way medium
+    def get_sell_med(self):
+        """Get sell medium of an item"""
         if self._sell:
             return statistics.median(self._sell)
         else:
@@ -96,34 +103,37 @@ class TradingAlgo:
         self.item_week = item_week
 
     def get_liquid_sell(self):
+        """Get liquidity of day average sell"""
         return self.item_day.get_avg_sell()
 
     def possible_profit_comprehensive(self):
-        # Calculate the average trading cost based on recent hourly data
-        immediate_trade_cost = (self.item_hour.get_avg_buy() + self.item_hour.get_avg_sell()) / 2
+        """Calculates possible profit, the closer to 0 the better."""
+        # Calculate the average trading cost based on recent hourly data (mediums) for more accuracy.
+        immediate_trade_cost = (self.item_hour.get_buy_med() + self.item_hour.get_sell_med()) / 2
 
-        # Incorporate daily data to get a sense of short to medium-term market trends
-        daily_trade_value = (self.item_day.get_avg_buy() + self.item_day.get_avg_sell()) / 2
+        # Incorporate daily data to get a sense of short to medium-term market trends (This could be removed)
+        daily_trade_value = (self.item_day.get_buy_med() + self.item_day.get_sell_med()) / 2
 
-        # Use weekly data for a longer-term market perspective
-        expected_future_trade_value = (self.item_week.get_avg_buy() + self.item_week.get_avg_sell()) / 2
+        # Use weekly data for comparison to hourly and daily.
+        expected_future_trade_value = (self.item_week.get_buy_med() + self.item_week.get_sell_med()) / 2
 
         # Calculate potential profit, factoring in immediate, daily, and weekly data
         # The method weights these differently, assuming that more recent data might be more relevant
-        # Adjust the weights according to your trading strategy and risk tolerance
         weighted_trade_value = (immediate_trade_cost * 0.4) + (daily_trade_value * 0.3) + (
                 expected_future_trade_value * 0.3)
         profit = expected_future_trade_value - weighted_trade_value
         return profit
 
     def medium_sell_week(self):
+        """Gets the item sell week medium"""
         return self.item_week.get_sell_med()
 
     def medium_buy_week(self):
+        """Gets the item buy week medium"""
         return self.item_week.get_buy_med()
 
     def weighted_sell_volume(self):
-        # Calculates the average weighted sell volume.
+        "Calculates the average weighted sell volume."
         day_avg_sell_vol = self.item_day.get_avg_sell_volume()
         hour_avg_sell_vol = self.item_hour.get_avg_sell_volume()
         week_avg_sell_vol = self.item_week.get_avg_sell_volume()
@@ -132,7 +142,7 @@ class TradingAlgo:
         return weighted_sell_vol
 
     def weighted_buy_volume(self):
-        # Calculates the average weighted buy volume.
+        "Calculates the average weighted buy volume."
         day_avg_sell_vol = self.item_day.get_avg_sell_volume()
         hour_avg_sell_vol = self.item_hour.get_avg_sell_volume()
         week_avg_sell_vol = self.item_week.get_avg_sell_volume()
@@ -204,7 +214,7 @@ class TradingAlgo:
 
 class Main:
     def __init__(self):
-        self.search_function = Search()  # Use this instance for searching
+        self.search_function = Search()
 
     def metrics(self, search):
         """Determines if it's worth buying or not. Acts like main()."""
@@ -215,7 +225,7 @@ class Main:
             return False
         # This part handles the search, now we have a tuple.
 
-        # Set up Trading Algo and the 3 items:
+        # Set up Trading Algo and the 3 items: (There has to be a better way)
         item_day = Item(item_result[0].get_max_sell(), item_result[0].get_max_buy(), item_result[0].get_min_buy(),
                         item_result[0].get_min_sell(), item_result[0].get_buy(), item_result[0].get_sell(),
                         item_result[0].get_sell_vol(), item_result[0].get_buy_vol())
@@ -265,19 +275,19 @@ class Main:
         historical_sell_comparison = (
                                              searched_item.weighted_sell() - searched_item.medium_sell_week()) / searched_item.medium_sell_week() * 100
 
-        # Medium sell
+        # Medium sell of item
         medium_sell = searched_item.medium_sell_week()
 
-        # medium buy
+        # medium buy of item
         medium_buy = searched_item.medium_buy_week()
 
-        # Possible Profit
+        # Possible Profit of item
         possible_profit = searched_item.possible_profit_comprehensive()
 
-        # current - instant sell:
+
         instant_sell = searched_item.get_liquid_sell()
 
-        # Compile all metrics into a dictionary
+        # Compile all metrics into a dictionary (To be used with the trading algo and debugging.)
         metrics = {
             "profitability": profitability,
             "volatility": volatility,
@@ -305,19 +315,19 @@ class Main:
             print("Item not found!")
             return False
 
-        # Positive possible_profit
+        # Check if positive possible_profit
         points += 1 if metrics["possible_profit"] > 0 else 0
 
         # Profitability considering volatility
         if metrics["profitability"] > -5:
             points += 1
-            if metrics["volatility"] < -2:  # Subtract a point for high volatility
+            if metrics["volatility"] < -2:  # Subtract a point if volatility is high
                 points -= 1
 
-        # Low volatility
+        # Check for Low volatility
         points += 1 if metrics["volatility"] > -3 else 0
 
-        # High liquidity adjusted for volatility
+        # Check if High liquidity with adjustment for volatility
         if metrics["liquidity"] > 1000000:
             points += 1
             if metrics["volatility"] < -2:
@@ -329,7 +339,7 @@ class Main:
             if metrics["price_stability"] > 100:
                 points += 2
 
-        # Spread indicating market efficiency
+        # Spread indicating the market efficiency (formula may be inacc)
         if metrics["spread"] > -50000:
             points += 1
             if metrics["liquidity"] > 1500000:
@@ -337,30 +347,30 @@ class Main:
                 if spread_to_liquidity_ratio < 0.01:
                     points += 1
 
-        # High price stability
+        # If the price is stable
         points += 1 if metrics["price_stability"] > 100 else 0
 
-        # Historical buy vs. sell comparison adjusted for momentum
+        # historical buy vs. sell comparison adjusted with momentum
         if metrics["historical_buy_comparison"] > metrics["historical_sell_comparison"]:
             points += 2 if metrics["price_momentum"] > 0 else 1
 
-        # Relative volume in context of volatility
+        # Relative volume in context of how volatile the item is.
         if metrics["relative_volume"] > 0.05:
             points += 1
             if metrics["volatility"] < -2:
                 points -= 1
 
-        # Current price relative to medium buy or sell indicating direction
+        # Current price relative to medium buy or sell indicating possible direction
         if metrics["current_price"] <= metrics["medium_buy"]:
             points += 1
         if metrics["current_price"] >= metrics["medium_sell"]:
             points += 2
 
-        # Instant sell price comparison indicating potential for immediate transaction
+        # Instant sell price comparison
         if metrics["instant_sell"] >= metrics["current_price"] * 0.98:
             points += 1
 
-        # Adjusted higher liquidity threshold
+        #  liquidity threshold:
         points += 1 if metrics["liquidity"] > 1500000 else 0
 
         if points >= 10:
