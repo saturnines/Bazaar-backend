@@ -29,6 +29,7 @@ class ItemSearch:
 
 
 class Search_Fun:
+    """This class above function and searches it and returns false if the item doesn't exist."""
     def __init__(self):
         self._search_function = ItemSearch()
 

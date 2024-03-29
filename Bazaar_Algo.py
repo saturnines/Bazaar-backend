@@ -19,16 +19,16 @@ class Item:
 
     def flatten_and_check(self, data):
         """Ensure data is a list of lists, flatten it, and handle non-iterable items correctly."""
-        # Ensure data is in a list
+        # Checks data is in a list, should never happen.
         if not isinstance(data, list):
             data = [data]
 
         flat_list = []
         for item in data:
-            # If the item is a list, extend flat_list by iterating over its elements
+            # If the item is a list iterate the elements
             if isinstance(item, list):
                 flat_list.extend([subitem for subitem in item if subitem is not None])
-            # For non-list items (including non-iterables like float, int), append directly to flat_list
+            # For non-list items append directly to the main list
             else:
                 if item is not None:
                     flat_list.append(item)
@@ -36,16 +36,19 @@ class Item:
         # Return [1] if flat_list is empty, ensuring there's always something to calculate with
         return flat_list if flat_list else [1]
 
-    # Example method to get average sell volume
+
     def get_avg_sell_volume(self):
+        """Get Sell Volume"""
         flat_list = self.flatten_and_check(self._sellvolume)
         return sum(flat_list) / len(flat_list)
 
     def get_avg_buy_volume(self):
+        """Get Average Buy Volume"""
         flat_list = self.flatten_and_check(self._buyvolume)
         return sum(flat_list) / len(flat_list)
 
     def get_sell(self):
+        """Get current sell value"""
         return self._sell
 
     def get_avg_buy(self):

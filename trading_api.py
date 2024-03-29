@@ -36,6 +36,7 @@ class InvalidSearch(Exception):
 
 
 class Metrics(BaseModel):  # data validation
+    """Data validation """
     profitability: float
     volatility: float
     liquidity: float
