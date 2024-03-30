@@ -16,7 +16,8 @@ origins = [  # Used this to test if the apis work within the frontend
     "http://localhost:8000",  # Allow local development server
     "http://127.0.0.1:5500",  # Allow Frontends
     "http://127.0.0.1:51242",
-    "http://172.17.0.1:53332/"
+    "http://172.17.0.1:53332/",
+    "https://api.kevinsapi.net", # Allow api
 
 ]
 

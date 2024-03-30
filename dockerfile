@@ -10,9 +10,9 @@ COPY . /app
 # Install packages in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Allow port 8000
+# Allow port 8080
 EXPOSE 8080
 
 
 #Run the app
-CMD ["uvicorn", "trading_api:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "trading_api:app", "--host", "0.0.0.0", "--port", "8080"]

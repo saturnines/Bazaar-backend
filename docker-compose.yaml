@@ -13,3 +13,14 @@ services:
     image: "redis"
     ports:
       - "6379:6379"
+
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - /path/to/your/certificates:/etc/ssl/certs:ro
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - web
