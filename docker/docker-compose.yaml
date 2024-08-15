@@ -2,6 +2,7 @@ version: '3'
 
 services:
   web:
+    container_name: api_service
     build: .
     command: sh -c "uvicorn trading_api:app --host 0.0.0.0 --port 8080"
     ports:
@@ -10,11 +11,13 @@ services:
       - redis
 
   redis:
+    container_name: redis_service
     image: "redis"
     ports:
       - "6379:6379"
 
   nginx:
+    container_name: reverse_proxy_service
     image: nginx:latest
     volumes:
       - ./nginx:/etc/nginx/conf.d
