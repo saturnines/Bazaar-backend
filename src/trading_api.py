@@ -52,7 +52,7 @@ class Metrics(BaseModel):  # data validation
     instant_sell: float
 
 
-class InvestmentSignal(BaseModel):  # data validation for the investment singal
+class InvestmentSignal(BaseModel):  # data validation for the investment signal
     Signal: str
     metrics: Metrics
 
@@ -89,7 +89,7 @@ async def get_item_metrics(search_term: str):
         await client.aclose() #close the redis instance.
 
 
-class PossibleItem(BaseModel): #(I think this one is unnecessary.) but still good practice.
+class PossibleItem(BaseModel):
     all_items: List[str]
 
 
@@ -104,9 +104,9 @@ async def dyn_search_list():
     except InvalidSearch:
         raise HTTPException(status_code=405, detail='List not found!')
 
-
+# Remember to do something like  http://127.0.0.1:8000/items/?search_term=RED_MUSHROOM  while querying :)
 # Note if you want to run the redis server use "
-# "
+
 # This is a quick run command for debugging purposes
 if __name__ == "__main__":
     import uvicorn
