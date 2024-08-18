@@ -1,0 +1,19 @@
+name: Bazaar Api
+
+on:
+  push:
+    branches: [ main ]  
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag my-image:$(date +%s)
+
+
+    - name: Print success message
+      run: echo "Docker image built successfully, check the current verison to confirm :)"
