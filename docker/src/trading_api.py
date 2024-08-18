@@ -104,6 +104,14 @@ async def dyn_search_list():
     except InvalidSearch:
         raise HTTPException(status_code=405, detail='List not found!')
 
+@app.get("/version")
+async def get_curr_vers():
+    try:
+        return "You are on version 1.0.0"
+    except Exception as e:
+        return "Something is wrong!"
+
+
 # Remember to do something like  http://127.0.0.1:8000/items/?search_term=RED_MUSHROOM  while querying :)
 # Note if you want to run the redis server use "
 
