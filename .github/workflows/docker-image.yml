@@ -2,7 +2,7 @@ name: Bazaar Api
 
 on:
   push:
-    branches: [ main ]  
+    branches: [ main ]
 
 jobs:
   build:
@@ -11,9 +11,25 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image:$(date +%s)
+    - name: Setup SSH
+      run: |
+        echo "${{ secrets.GCE_SSH_PRIVATE_KEY }}" > gce_key.pem
+        chmod 600 gce_key.pem
+
+    - name: Deploy to GCP
+      run: |
+          ssh -i gce_key.pem -o StrictHostKeyChecking=no ${{ secrets.GCE_USER }}@${{ secrets.GCE_INSTANCE_IP }} '
+          cd Bazaar-backend &&
+          git pull origin main &&
+          docker build -t bazaar-api:latest . &&
+          docker stop bazaar-api-container || true &&
+          docker rm bazaar-api-container || true &&
+          docker run -d --name bazaar-api-container -p 80:8080 bazaar-api:latest
+        '
+
+    - name: Cleanup # remove old ssh private keys
+      run: rm gce_key.pem
 
 
-    - name: Print success message
-      run: echo "Docker image built successfully, check the current verison to confirm :)"
+    - name: Print deployment.
+      run: echo "Docker image built successfully, check the current version to confirm :)"
