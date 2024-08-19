@@ -5,7 +5,7 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -16,20 +16,18 @@ jobs:
         echo "${{ secrets.GCE_SSH_PRIVATE_KEY }}" > gce_key.pem
         chmod 600 gce_key.pem
 
-    - name: Deploy to GCP
+    - name: Deploy to Compute Engine
       run: |
-          ssh -i gce_key.pem -o StrictHostKeyChecking=no ${{ secrets.GCE_USER }}@${{ secrets.GCE_INSTANCE_IP }} '
+        ssh -i gce_key.pem -o StrictHostKeyChecking=no ${{ secrets.GCE_USER }}@${{ secrets.GCE_INSTANCE_IP }} '
           cd Bazaar-backend &&
           git pull origin main &&
-          docker build -t bazaar-api:latest . &&
-          docker stop bazaar-api-container || true &&
-          docker rm bazaar-api-container || true &&
-          docker run -d --name bazaar-api-container -p 80:8080 bazaar-api:latest
+          docker-compose down &&
+          docker-compose build --no-cache &&
+          docker-compose up -d
         '
 
-    - name: Cleanup # remove old ssh private keys
+    - name: Cleanup
       run: rm gce_key.pem
 
-
-    - name: Print deployment.
-      run: echo "Docker image built successfully, check the current version to confirm :)"
+    - name: Print success message
+      run: echo "Deployment success! Check the api vers to confirm."
