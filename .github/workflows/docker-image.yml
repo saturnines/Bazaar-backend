@@ -19,7 +19,7 @@ jobs:
     - name: Deploy to Compute Engine
       run: |
         ssh -i gce_key.pem -o StrictHostKeyChecking=no ${{ secrets.GCE_USER }}@${{ secrets.GCE_INSTANCE_IP }} '
-          cd Bazaar-backend &&
+          cd Bazaar-backend/docker &&
           git pull origin main &&
           docker-compose down &&
           docker-compose build --no-cache &&
