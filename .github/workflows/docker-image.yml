@@ -29,4 +29,3 @@ jobs:
     - name: Print success message
       run: echo "Deployment success! Check the api vers to confirm."
 
-# test
