@@ -107,7 +107,7 @@ async def dyn_search_list():
 @app.get("/version")
 async def get_curr_vers():
     try:
-        return "You are on version 1.0.1"
+        return "You are on version 1.0.2"
     except Exception as e: # should never happen lol
         return "Something is wrong!"
 

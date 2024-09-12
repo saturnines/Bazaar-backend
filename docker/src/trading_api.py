@@ -105,9 +105,9 @@ async def dyn_search_list():
         raise HTTPException(status_code=405, detail='List not found!')
 
 @app.get("/version")
-async def get_curr_vers():
+async def get_curr_vers(): # there is a better way to do this with class
     try:
-        return "You are on version 1.0.1"
+        return "You are on version 1.0.2"
     except Exception as e: # should never happen lol
         return "Something is wrong!"
 
