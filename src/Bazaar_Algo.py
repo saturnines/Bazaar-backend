@@ -18,82 +18,77 @@ class Item:
         self._buyvolume = buyvolume
 
     def flatten_and_check(self, data):
-        """Ensure data is a list of lists, flatten it, and handle non-iterable items correctly."""
-        # Checks data is in a list, should never happen.
+        """Ensure data is a list of numeric values, flatten it, and handle non-numeric items correctly."""
         if not isinstance(data, list):
             data = [data]
 
         flat_list = []
         for item in data:
-            # If the item is a list iterate the elements
             if isinstance(item, list):
-                flat_list.extend([subitem for subitem in item if subitem is not None])
-            # For non-list items append directly to the main list
+                flat_list.extend([self.to_float(subitem) for subitem in item if subitem is not None])
             else:
                 if item is not None:
-                    flat_list.append(item)
+                    flat_list.append(self.to_float(item))
 
-        # Return [1] if flat_list is empty, ensuring there's always something to calculate with
-        return flat_list if flat_list else [1]
+        return flat_list if flat_list else [1.0]
 
+    def to_float(self, value):
+        """Convert value to float, returning 0.0 if conversion fails."""
+        try:
+            return float(value)
+        except (ValueError, TypeError):
+            return 0.0
+
+    def safe_average(self, data):
+        """Safely calculate the average of a list of numbers."""
+        flat_list = self.flatten_and_check(data)
+        return sum(flat_list) / len(flat_list) if flat_list else 0.0
 
     def get_avg_sell_volume(self):
-        """Get Sell Volume"""
-        flat_list = self.flatten_and_check(self._sellvolume)
-        return sum(flat_list) / len(flat_list)
+        """Get Average Sell Volume"""
+        return self.safe_average(self._sellvolume)
 
     def get_avg_buy_volume(self):
         """Get Average Buy Volume"""
-        flat_list = self.flatten_and_check(self._buyvolume)
-        return sum(flat_list) / len(flat_list)
+        return self.safe_average(self._buyvolume)
 
     def get_sell(self):
         """Get current sell value"""
-        return self._sell
+        return self.to_float(self._sell)
 
     def get_avg_buy(self):
         """Calculates Average buy of an item"""
-        flat_list = self.flatten_and_check(self._buy)
-        return sum(flat_list) / len(flat_list)
+        return self.safe_average(self._buy)
 
     def get_avg_sell(self):
         """Calculates average sell of items"""
-        flat_list = self.flatten_and_check(self._sell)
-        return sum(flat_list) / len(flat_list)
+        return self.safe_average(self._sell)
 
     def get_avg_minsell(self):
         """Calculates average min sell of an item"""
-        flat_list = self.flatten_and_check(self._minSell)
-        return sum(flat_list) / len(flat_list)
+        return self.safe_average(self._minSell)
 
     def get_avg_minbuy(self):
         """Calculates average min buy of an item"""
-        flat_list = self.flatten_and_check(self._min_buy)
-        return sum(flat_list) / len(flat_list)
+        return self.safe_average(self._min_buy)
 
     def get_avg_maxbuy(self):
         """Calculates average max buy of an item"""
-        flat_list = self.flatten_and_check(self._maxBuy)
-        return sum(flat_list) / len(flat_list)
+        return self.safe_average(self._maxBuy)
 
     def get_avg_maxsell(self):
         """Calculates average max sell of an item"""
-        flat_list = self.flatten_and_check(self._maxSell)
-        return sum(flat_list) / len(flat_list)
+        return self.safe_average(self._maxSell)
 
     def get_buy_med(self):
-        """Calculates the median get buy of items."""
-        if self._buy:
-            return statistics.median(self._buy)
-        else:
-            raise ValidationError("self._buy not found.")
+        """Calculates the median buy of items."""
+        flat_list = self.flatten_and_check(self._buy)
+        return statistics.median(flat_list) if flat_list else 0.0
 
     def get_sell_med(self):
-        """Get sell medium of an item"""
-        if self._sell:
-            return statistics.median(self._sell)
-        else:
-            raise ValidationError("Self._sell not found")
+        """Get sell median of an item"""
+        flat_list = self.flatten_and_check(self._sell)
+        return statistics.median(flat_list) if flat_list else 0.0
 
 
 class TradingAlgo:
