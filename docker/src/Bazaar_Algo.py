@@ -281,7 +281,7 @@ class Main:
 
 
         instant_sell = searched_item.get_liquid_sell()
-        algo_res = str(item_result)
+        algo_res = str(search)
 
         # Compile all metrics into a dictionary (To be used with the trading algo and debugging.)
         metrics = {
