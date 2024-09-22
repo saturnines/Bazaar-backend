@@ -50,6 +50,7 @@ class Metrics(BaseModel):  # data validation
     possible_profit: float
     current_price: float
     instant_sell: float
+    search_term: str
 
 
 class InvestmentSignal(BaseModel):  # data validation for the investment signal

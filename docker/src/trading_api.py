@@ -50,6 +50,7 @@ class Metrics(BaseModel):  # data validation
     possible_profit: float
     current_price: float
     instant_sell: float
+    search_term: str
 
 
 class InvestmentSignal(BaseModel):  # data validation for the investment signal
@@ -105,7 +106,7 @@ async def dyn_search_list():
         raise HTTPException(status_code=405, detail='List not found!')
 
 @app.get("/version")
-async def get_curr_vers(): # there is a better way to do this with class
+async def get_curr_vers():
     try:
         return "You are on version 1.0.2"
     except Exception as e: # should never happen lol

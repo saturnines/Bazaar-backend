@@ -298,6 +298,7 @@ class Main:
             "possible_profit": possible_profit,
             "current_price": current_price,
             "instant_sell": instant_sell,
+            "search_query": item_result
         }
 
         return metrics
@@ -376,7 +377,6 @@ class Main:
             decision = "No"
 
         return {"Signal": decision, "metrics": metrics}
-
 
 
 
