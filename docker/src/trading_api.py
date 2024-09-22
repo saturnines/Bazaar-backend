@@ -35,7 +35,7 @@ class InvalidSearch(Exception):
     pass
 
 
-class Metrics(BaseModel):  # data validation
+class Metrics(BaseModel):
     profitability: float
     volatility: float
     liquidity: float
@@ -50,10 +50,9 @@ class Metrics(BaseModel):  # data validation
     possible_profit: float
     current_price: float
     instant_sell: float
-    search_term: str
+    search_query: str
 
-
-class InvestmentSignal(BaseModel):  # data validation for the investment signal
+class InvestmentSignal(BaseModel):
     Signal: str
     metrics: Metrics
 
