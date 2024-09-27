@@ -57,15 +57,9 @@ class InvestmentSignal(BaseModel):
     metrics: Metrics
 
 
-@app.get("/items/")
-async def get_item_metrics(search_term: str | None = None) -> Union[Dict[str, Any], Dict[str, str]]:
-    if search_term is None:
-        return {
-            "message": "Welcome! You can use this API to get investment signals. Please provide a search term.",
-            "available_queries_url": "https://api.kevinsapi.net/dyn_search_list",
-            "Try it yourself!": "https://api.kevinsapi.net/items/?search_term=wheat"
-        }
-    elif not search_term.strip():
+@app.get("/items/", response_model=InvestmentSignal)
+async def get_item_metrics(search_term: str):
+    if not search_term:  # Raise exception that search term is not there. (This should never happen)
         raise HTTPException(status_code=400, detail="Search term is required.")
     search = Main()  # Init API and search function
 
