@@ -57,17 +57,17 @@ class InvestmentSignal(BaseModel):
     metrics: Metrics
 
 
-example_terms = ["wheat", "gold", "hemoglass"]
+
+example_terms = ["wheat", "gold"]
 
 @app.get("/items/", response_model=InvestmentSignal)
 async def get_item_metrics(search_term: str):
-    if not search_term:  # Raise exception that search term is not there. (This should never happen)
-        if not search_term:  # If no search term is provided, return helpful information without error
-            return {
-                "message": "Search term is missing. Here is a list of sample queries you can try.",
-                "query_list_url": "https://api.kevinsapi.net/dyn_search_list",
-                "example_queries": [f"/items/?search_term={term}" for term in example_terms]
-            }
+    if not search_term:
+        return {
+            "message": "Welcome! You can use this API to get investment signals. Please provide a search term.",
+            "available_queries_url": "https://api.kevinsapi.net/dyn_search_list",
+            "Try it yourself!": "https://api.kevinsapi.net/items/?search_term=wheat"
+        }
     search = Main()  # Init API and search function
 
     client = Redis.from_url("redis://redis")  # Open Redis pool
