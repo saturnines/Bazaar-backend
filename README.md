@@ -34,10 +34,10 @@ https://api.kevinsapi.net/dyn_search_list
 
 ## Disclaimer
 
-**IMPORTANT:** This system is provided for informational purposes only. I am not responsible for any loss of Hypixel Skyblock coins  that may occur as a result of using this api. Use at your own risk. 
+**IMPORTANT:** This system is provided for informational purposes only. I am not responsible for any loss of Hypixel Skyblock coins  that may occur as a result of using this api. Use at your own risk. I only made this to learn about backend stuff lol..
 
 ## Credits
-A big thank you for Akvav and the Coflnet team for having a bazaar endpoint, without it this project would have not existed. 
+A big thank you for Akwav and the Coflnet team for having a bazaar endpoint, without it this project would have not existed. 
 
 CoflNet: [Coflnet/HypixelSkyblock](https://github.com/Coflnet/HypixelSkyblock)
 
