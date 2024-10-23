@@ -2,7 +2,7 @@
 
 ## Overview
 
-This Api provides real-time market data analysis and trading signal generation for various commodities and items. It uses a somewhat algorithms to process bazaar data and offer insights to traders and analysts.
+This Api provides real-time market data analysis for hypixel skyblock.
 
 ## API Endpoints
 
