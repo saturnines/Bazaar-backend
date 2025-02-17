@@ -270,7 +270,7 @@ class Main:
             "possible_profit": possible_profit,
             "current_price": current_price,
             "instant_sell": instant_sell,
-            "search_query": str(item_result)
+            "search_query": search
         }
         return metrics
 
