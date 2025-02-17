@@ -103,16 +103,15 @@ class TradingAlgo:
 
     def possible_profit_comprehensive(self):
         """Calculates possible profit, the closer to 0 the better."""
-        # Use recent hourly data (mediums) for immediate trade cost.
+
         immediate_trade_cost = (self.item_hour.get_buy_med() + self.item_hour.get_sell_med()) / 2
 
-        # Incorporate daily data for short- to medium-term trends.
+
         daily_trade_value = (self.item_day.get_buy_med() + self.item_day.get_sell_med()) / 2
 
-        # Use weekly data for expected future trends.
+
         expected_future_trade_value = (self.item_week.get_buy_med() + self.item_week.get_sell_med()) / 2
 
-        # Weighting the trade values (more emphasis on recent data).
         weighted_trade_value = (immediate_trade_cost * 0.4) + (daily_trade_value * 0.3) + (expected_future_trade_value * 0.3)
         profit = expected_future_trade_value - weighted_trade_value
         return profit
