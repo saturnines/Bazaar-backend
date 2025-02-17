@@ -279,9 +279,24 @@ class Main:
             print("Item not found!")
             return False
 
-        # --- Scoring helper functions ---
+        current_price = metrics["current_price"] if metrics["current_price"] > 0 else 1.0
+
+
+        relative_liquidity = metrics["liquidity"] / current_price
+
+        spread_ratio = abs(metrics["spread"]) / current_price
+
+        relative_possible_profit = (metrics["possible_profit"] / current_price) * 100
+
+
+
         def score_possible_profit(m):
-            return 1 if m["possible_profit"] > 0 else 0
+            if relative_possible_profit > 2:
+                return 2
+            elif relative_possible_profit > 0:
+                return 1
+            else:
+                return 0
 
         def score_profitability_volatility(m):
             s = 0
@@ -292,48 +307,48 @@ class Main:
             return s
 
         def score_volatility(m):
+            # Lower (or less negative) volatility is preferred.
             return 1 if m["volatility"] > -3 else 0
 
         def score_liquidity(m):
             s = 0
-            if m["liquidity"] > 1_000_000:
+            if relative_liquidity > 10:
+                s += 2
+            elif relative_liquidity > 5:
                 s += 1
-                if m["volatility"] < -2:
-                    s -= 1
-            if m["liquidity"] > 1_500_000:
-                s += 1
+            else:
+                s -= 1
             return s
 
         def score_momentum_stability(m):
             s = 0
-            if m["price_momentum"] > 0:
+            if m["price_momentum"] > 0.05:
+                s += 2
+            elif m["price_momentum"] > 0:
                 s += 1
-                if m["price_stability"] > 100:
-                    s += 2
-            s += 1 if m["price_stability"] > 100 else 0
+            if m["price_stability"] > 100:
+                s += 1
             return s
 
         def score_spread(m):
             s = 0
-            if m["spread"] > -50_000:
+            if spread_ratio < 0.01:
+                s += 2
+            elif spread_ratio < 0.02:
                 s += 1
-                if m["liquidity"] > 1_500_000:
-                    ratio = abs(m["spread"]) / m["liquidity"]
-                    if ratio < 0.01:
-                        s += 1
+            else:
+                s -= 1
             return s
 
         def score_historical(m):
             if m["historical_buy_comparison"] > m["historical_sell_comparison"]:
-                return 2 if m["price_momentum"] > 0 else 1
+                return 1 if m["price_momentum"] > 0 else 0
             return 0
 
         def score_relative_volume(m):
             s = 0
             if m["relative_volume"] > 0.05:
                 s += 1
-                if m["volatility"] < -2:
-                    s -= 1
             return s
 
         def score_current_price(m):
@@ -341,25 +356,27 @@ class Main:
             if m["current_price"] <= m["medium_buy"]:
                 s += 1
             if m["current_price"] >= m["medium_sell"]:
-                s += 2
+                s += 1
             return s
 
         def score_instant_sell(m):
-            return 1 if m["instant_sell"] >= m["current_price"] * 0.98 else 0
+            return 1 if m["instant_sell"] >= current_price * 0.98 else 0
 
-        #  Total
+        # --- Total Scoring ---
         total_points = (
-            score_possible_profit(metrics) +
-            score_profitability_volatility(metrics) +
-            score_volatility(metrics) +
-            score_liquidity(metrics) +
-            score_momentum_stability(metrics) +
-            score_spread(metrics) +
-            score_historical(metrics) +
-            score_relative_volume(metrics) +
-            score_current_price(metrics) +
-            score_instant_sell(metrics)
+                score_possible_profit(metrics) +
+                score_profitability_volatility(metrics) +
+                score_volatility(metrics) +
+                score_liquidity(metrics) +
+                score_momentum_stability(metrics) +
+                score_spread(metrics) +
+                score_historical(metrics) +
+                score_relative_volume(metrics) +
+                score_current_price(metrics) +
+                score_instant_sell(metrics)
         )
 
+        # Decision thresholds remain similar, though the new relative scoring may require tuning.
         decision = "Buy" if total_points >= 10 else "Watch" if total_points >= 5 else "No"
+
         return {"Signal": decision, "metrics": metrics}
